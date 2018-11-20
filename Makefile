@@ -27,20 +27,14 @@ endif
 
 ifdef OMNIORB_INC
 	INC_DIR	+= -I${OMNIORB_INC}
-else
-	INC_DIR += -I/usr/include/omniORB4
 endif
 
 ifdef OMNIORB_LIB
 	LIB_DIR	+= -L${OMNIORB_LIB}
-else
-	LIB_DIR	+= -L/usr/lib
 endif
 
 ifdef ZMQ_INC
 	INC_DIR += -I${ZMQ_INC}
-else
-	INC_DIR	+= -I/usr/include
 endif
 
 ifdef PYTHON_INC
@@ -64,7 +58,9 @@ SHLIB_SUFFIX = so
 
 #  release numbers for libraries
 #
- LIBVERSION    = 6
+ LIBVERSION    = 1
+ LIBRELEASE    = 0
+ LIBSUBRELEASE = 0
 #
 
 LIBRARY       = $(BASELIBNAME).a
@@ -72,17 +68,30 @@ DT_SONAME     = $(BASELIBNAME).$(SHLIB_SUFFIX).$(LIBVERSION)
 
 .PHONY : install clean
 
-HdbppInsert: HdbppInsert.o
-	$(CXX) HdbppInsert.o HdbppInsert_wrap.o $(SHLDFLAGS) $(LFLAGS_SONAME)$(DT_SONAME) -o _$(BASELIBNAME).so
-
-HdbppInsert.o: HdbppInsert.cpp HdbppInsert.h HdbppInsert_wrap.cxx
-	$(CXX) $(CXXFLAGS) -fPIC -c HdbppInsert.cpp HdbppInsert_wrap.cxx
+lib/HdbppInsert: lib obj obj/HdbppInsert.o obj/HdbppInsert_wrap.o
+	$(CXX) obj/HdbppInsert.o obj/HdbppInsert_wrap.o $(SHLDFLAGS) $(LFLAGS_SONAME)$(DT_SONAME) -o lib/_$(BASELIBNAME).so
 	
-HdbppInsert_wrap.cxx: HdbppInsert.i
-	$(SWIG) HdbppInsert.i
+obj/HdbppInsert_wrap.o: src/HdbppInsert_wrap.cxx src/HdbppInsert.h
+	$(CXX) $(CXXFLAGS) -fPIC -c src/HdbppInsert_wrap.cxx -o $@
+	
+obj/HdbppInsert.o: src/HdbppInsert.cpp src/HdbppInsert.h
+	$(CXX) $(CXXFLAGS) -fPIC -c src/HdbppInsert.cpp -o $@
+
+src/HdbppInsert_wrap.cxx: src/HdbppInsert.i
+	$(SWIG) src/HdbppInsert.i
+
+.PHONY : install clean
 	
 clean:
-	rm -f *.o *.so* *.a *_wrap.cxx
+	rm -rf obj/ lib/ *.o *.so* *.a src/*_wrap.cxx src/*.py*
+	
+install:
+	install -d libhdbppinsert
+	touch libhdbppinsert/__init__.py
+	install -m 755 src/HdbppInsert.py libhdbppinsert/HdbppInsert.py
+	install -m 755 src/HdbppInsert.h libhdbppinsert/HdbppInsert.h
+	install -m 755 lib/_$(BASELIBNAME).so libhdbppinsert/_$(BASELIBNAME).so
+	
 
 lib obj:
 	@mkdir $@
