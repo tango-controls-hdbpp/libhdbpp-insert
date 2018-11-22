@@ -322,6 +322,18 @@ int HdbppInsert::get_Attr_Update_Status(string attribute)
 	return aux;
 }
 
+void HdbppInsert::reset_Attr_Pending_Ops(string attribute)
+{
+	map <string, bool> :: iterator it_op;
+
+	it_op = pending_ops.find(attribute);
+	if (it_op != pending_ops.end())
+	{
+		it_op->second = false;
+		print_Msg("\e[1;31m"+attribute+" Force Reset Pending Operations!!\e[0m\n", MSG_ERROR);
+	}
+}
+
 //=============================================================================
 // Private Functions for the HdbppInsert Class
 //=============================================================================

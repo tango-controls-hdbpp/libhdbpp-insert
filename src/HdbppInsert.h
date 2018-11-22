@@ -18,14 +18,11 @@ public:
 	virtual ~HdbppInsert();
 	
 	bool is_Connected();
-	
 	void test_Func();
-
 	int insert_Attr_Async(string attribute);
-	
 	int insert_Attr(string attribute);
-	
 	int get_Attr_Update_Status(string attribute);
+	void reset_Attr_Pending_Ops(string attribute);
 
 private:
 	std::map<string, Tango::DeviceProxy*> dsproxies;
