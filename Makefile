@@ -86,12 +86,12 @@ clean:
 	rm -rf obj/ lib/ *.o *.so* *.a src/*_wrap.cxx src/*.py*
 	
 install:
-	install -d libhdbppinsert
-	touch libhdbppinsert/__init__.py
-	install -m 755 src/HdbppInsert.py libhdbppinsert/HdbppInsert.py
-	install -m 755 src/HdbppInsert.h libhdbppinsert/HdbppInsert.h
-	install -m 755 lib/_$(BASELIBNAME).so libhdbppinsert/_$(BASELIBNAME).so
-	
+	install -d ${DESTDIR}$(PREFIX)/bin
+	touch ${DESTDIR}$(PREFIX)/bin/__init__.py
+	install -m 755 src/HdbppInsert.py ${DESTDIR}$(PREFIX)/bin/HdbppInsert.py
+	install -m 755 src/HdbppInsert.h ${DESTDIR}$(PREFIX)/bin/HdbppInsert.h
+	install -m 755 lib/_$(BASELIBNAME).so ${DESTDIR}$(PREFIX)/bin/_$(BASELIBNAME).so
+
 
 lib obj:
 	@mkdir $@
