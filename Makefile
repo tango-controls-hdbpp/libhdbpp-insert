@@ -1,5 +1,7 @@
 PREFIX=/usr/local
 
+#DESTDIR := $(shell python -m site --user-site)
+
 DBIMPL_INC = `mysql_config --include`
 DBIMPL_LIB = `mysql_config --libs_r`
 
@@ -85,12 +87,16 @@ src/HdbppInsert_wrap.cxx: src/HdbppInsert.i
 clean:
 	rm -rf obj/ lib/ *.o *.so* *.a src/*_wrap.cxx src/*.py*
 	
-install:
-	install -d libhdbppinsert
-	touch libhdbppinsert/__init__.py
-	install -m 755 src/HdbppInsert.py libhdbppinsert/HdbppInsert.py
-	install -m 755 src/HdbppInsert.h libhdbppinsert/HdbppInsert.h
-	install -m 755 lib/_$(BASELIBNAME).so libhdbppinsert/_$(BASELIBNAME).so
+install:	
+	install -d ${DESTDIR}/libhdbppinsert
+	touch ${DESTDIR}/libhdbppinsert/__init__.py
+	install -m 755 src/HdbppInsert.py ${DESTDIR}/libhdbppinsert/HdbppInsert.py
+	install -m 755 lib/_$(BASELIBNAME).so ${DESTDIR}/libhdbppinsert/_$(BASELIBNAME).so
+	install -d ${DESTDIR}/libhdbppinsert/include
+	install -m 755 src/HdbppInsert.h ${DESTDIR}/libhdbppinsert/include/HdbppInsert.h
+	
+all:
+	@echo DESTDIR IS $(DESTDIR)
 	
 
 lib obj:

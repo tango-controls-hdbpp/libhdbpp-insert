@@ -91,7 +91,7 @@ make
 
 ## Installation
 
-Once built simply run `make install`. The install can be passed a PREFIX variable, this is set to /usr/local by default. It is also possible to use DESTDIR. Install path is constructed as DESTDIR/PREFIX.
+Once built simply run `make install`. The install can be passed DESTDIR where the files will be installed under the foler ${DESTDIR}/libhdbppinsert. Install path is constructed as DESTDIR
 
 ## License
 
