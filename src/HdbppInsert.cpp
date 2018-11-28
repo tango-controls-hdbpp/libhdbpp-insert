@@ -89,14 +89,14 @@ HdbppInsert::HdbppInsert(const char *dbuser, const char *dbpass,
 	}
 	catch (...)
 	{
-		print_Msg("\e[1;31mError connecting to requested HDB!!\e[0m\n", MSG_ERROR);
+		print_Msg("\e[1;31mError connecting to requested HDB!!\e[0m", MSG_ERROR);
 		isConnected = false;
 	}
 }
 
 HdbppInsert::~HdbppInsert()
 {
-	print_Msg("DELETING mHdbppIns\n", MSG_INFO);
+	print_Msg("DELETING mHdbppIns", MSG_INFO);
 	delete mHdbppIns;
 }
 
@@ -107,7 +107,7 @@ bool HdbppInsert::is_Connected()
 
 void HdbppInsert::test_Func()
 {
-	print_Msg("\e[1;32mtest_func OK\e[0m\n", MSG_DEBUG);
+	print_Msg("\e[1;32mtest_func OK\e[0m", MSG_DEBUG);
 }
 
 
@@ -124,7 +124,7 @@ int HdbppInsert::insert_Attr_Async(string attribute)
 			
 		if (opspending == false)
 		{
-			print_Msg(attribute+" insert_Attr_Async enter\n", MSG_DEBUG);    
+			print_Msg(attribute+" insert_Attr_Async enter", MSG_DEBUG);    
 			
 			std::thread async_thread(&HdbppInsert::insert_Attr, this, attribute);
 			pending_ops[attribute] = true;
@@ -135,19 +135,19 @@ int HdbppInsert::insert_Attr_Async(string attribute)
 			
 			async_thread.detach();
 			
-			print_Msg(attribute+" insert_Attr_Async OK\n", MSG_DEBUG);  
+			print_Msg(attribute+" insert_Attr_Async OK", MSG_DEBUG);  
 
 			return RESULT_OK;
 		}
 		else
 		{
-			print_Msg("\e[1;31m"+attribute+" insert_Attr_Async: Pending operations!!\e[0m\n", MSG_ERROR);
+			print_Msg("\e[1;31m"+attribute+" insert_Attr_Async: Pending operations!!\e[0m", MSG_ERROR);
 			return RESULT_NOT_OK;		
 		}
 	}
 	catch (...)
 	{
-		print_Msg("\e[1;31m"+attribute+" insert_Attr_Async: Error Inserting attribute!!\e[0m\n", MSG_ERROR);
+		print_Msg("\e[1;31m"+attribute+" insert_Attr_Async: Error Inserting attribute!!\e[0m", MSG_ERROR);
 		return RESULT_NOT_OK;
 	}		
 }
@@ -179,12 +179,12 @@ int HdbppInsert::insert_Attr(string attribute)
 		{
 			Tango::DeviceProxy *dev_proxy = new Tango::DeviceProxy(const_cast<std::string&>(device_name));
 			dsproxies[device_name] = dev_proxy;
-			print_Msg("\e[1;32m"+device_name+" Adding proxy!!\e[0m\n", MSG_INFO);
+			print_Msg("\e[1;32m"+device_name+" Adding proxy!!\e[0m", MSG_INFO);
 		}
 		catch (Tango::DevFailed &e)
 		{
 			err = e.errors;
-			print_Msg("\e[1;31m"+device_name+" Error creating proxy!!\e[0m\n", MSG_ERROR);
+			print_Msg("\e[1;31m"+device_name+" Error creating proxy!!\e[0m", MSG_ERROR);
 			res = RESULT_NOT_OK;			
 		}
 	}
@@ -215,7 +215,7 @@ int HdbppInsert::insert_Attr(string attribute)
 				event_datatype.max_dim_x = info->max_dim_x;
 				event_datatype.max_dim_y = info->max_dim_y;
 
-				print_Msg("\e[1;32m"+attribute+" HDB Event data not found creating it and adding to Map. Adding it!!\e[0m\n", MSG_INFO);
+				print_Msg("\e[1;32m"+attribute+" HDB Event data not found creating it and adding to Map. Adding it!!\e[0m", MSG_INFO);
 				hdbevttypes[attribute] = event_datatype;
 				
 				delete info;
@@ -224,7 +224,7 @@ int HdbppInsert::insert_Attr(string attribute)
 			catch (Tango::DevFailed &e)
 			{
 				err = e.errors;
-				print_Msg("\e[1;31m"+attribute+" Error creating HDB event data!!\e[0m\n", MSG_ERROR);
+				print_Msg("\e[1;31m"+attribute+" Error creating HDB event data!!\e[0m", MSG_ERROR);
 				res = RESULT_NOT_OK;
 				
 				delete info;
@@ -246,7 +246,7 @@ int HdbppInsert::insert_Attr(string attribute)
 			{
 				err = da->get_err_stack();
 				err.length(err.length() - 1);
-				print_Msg("\e[1;31m"+attribute+" Error not possible to read attribute!!\e[0m\n", MSG_ERROR);
+				print_Msg("\e[1;31m"+attribute+" Error not possible to read attribute!!\e[0m", MSG_ERROR);
 			
 				delete da;
 				da = nullptr;				
@@ -260,7 +260,7 @@ int HdbppInsert::insert_Attr(string attribute)
 			delete da;
 			da = nullptr;
 			
-			print_Msg("\e[1;31m"+attribute+" Error DevFailed reading attribute!!\e[0m\n", MSG_ERROR);
+			print_Msg("\e[1;31m"+attribute+" Error DevFailed reading attribute!!\e[0m", MSG_ERROR);
 			res = RESULT_NOT_OK;
 		}
 
@@ -273,7 +273,7 @@ int HdbppInsert::insert_Attr(string attribute)
 				event_data = new Tango::EventData(dsproxies[device_name], attribute, event_name, da, err);
 				
 				mHdbppIns->insert_Attr((Tango::EventData *) event_data, event_datatype);
-				print_Msg("\e[1;32m"+attribute+" insert_Attr OK\e[0m\n", MSG_INFO);
+				print_Msg("\e[1;32m"+attribute+" insert_Attr OK\e[0m", MSG_INFO);
 				
 				delete event_data;
 				event_data = nullptr;
@@ -282,7 +282,7 @@ int HdbppInsert::insert_Attr(string attribute)
 			{
 				delete event_data;
 				event_data = nullptr;
-				print_Msg("\e[1;31m"+attribute+" Error inserting attribute!!\e[0m\n", MSG_ERROR);
+				print_Msg("\e[1;31m"+attribute+" Error inserting attribute!!\e[0m", MSG_ERROR);
 				res = RESULT_NOT_OK;
 			}
 		}
@@ -330,7 +330,7 @@ void HdbppInsert::reset_Attr_Pending_Ops(string attribute)
 	if (it_op != pending_ops.end())
 	{
 		it_op->second = false;
-		print_Msg("\e[1;31m"+attribute+" Force Reset Pending Operations!!\e[0m\n", MSG_ERROR);
+		print_Msg("\e[1;31m"+attribute+" Force Reset Pending Operations!!\e[0m", MSG_ERROR);
 	}
 }
 
@@ -350,7 +350,7 @@ string HdbppInsert::get_Device_Name(string attribute)
 	}
 	else 
 	{
-		print_Msg("\e[1;31mAttribute Getting Device name from "+attribute+"!!\e[0m\n", MSG_DEBUG);
+		print_Msg("\e[1;31mAttribute Getting Device name from "+attribute+"!!\e[0m", MSG_DEBUG);
 		return attribute;
 	}	
 }
@@ -367,7 +367,7 @@ string HdbppInsert::get_Attr_Name(string attribute)
 	}
 	else 
 	{
-		print_Msg("\e[1;31mAttribute Getting Attribute name from "+attribute+"!!\e[0m\n", MSG_DEBUG);
+		print_Msg("\e[1;31mAttribute Getting Attribute name from "+attribute+"!!\e[0m", MSG_DEBUG);
 		return attribute;
 	}	
 }
@@ -395,7 +395,8 @@ void HdbppInsert::print_Msg(string msg, int level)
 #ifdef _LIB_DEBUG
 	if (level >= debug_level )
 	{
-		printf(msg.c_str());
+		cout << msg << endl;
+/*		printf(msg.c_str());*/
 	}
 #endif
 	return;
