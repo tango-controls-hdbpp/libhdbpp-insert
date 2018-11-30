@@ -92,8 +92,6 @@ install:
 	touch ${DESTDIR}/libhdbppinsert/__init__.py
 	install -m 755 src/HdbppInsert.py ${DESTDIR}/libhdbppinsert/HdbppInsert.py
 	install -m 755 lib/_$(BASELIBNAME).so ${DESTDIR}/libhdbppinsert/_$(BASELIBNAME).so
-	install -d ${DESTDIR}/libhdbppinsert/include
-	install -m 755 src/HdbppInsert.h ${DESTDIR}/libhdbppinsert/include/HdbppInsert.h
 	
 all:
 	@echo DESTDIR IS $(DESTDIR)
