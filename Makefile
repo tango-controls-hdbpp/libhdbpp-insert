@@ -55,7 +55,7 @@ SWIG = swig3.0 -c++ -python
 #
 LFLAGS_SONAME = $(DBIMPL_LIB) $(LDFLAGS) -Wl,-soname,
 SHLDFLAGS = -shared
-BASELIBNAME =  HdbppInsert
+BASELIBNAME =  libhdbppinsert
 SHLIB_SUFFIX = so
 
 #  release numbers for libraries
@@ -70,17 +70,17 @@ DT_SONAME     = $(BASELIBNAME).$(SHLIB_SUFFIX).$(LIBVERSION)
 
 .PHONY : install clean
 
-lib/HdbppInsert: lib obj obj/HdbppInsert.o obj/HdbppInsert_wrap.o
-	$(CXX) obj/HdbppInsert.o obj/HdbppInsert_wrap.o $(SHLDFLAGS) $(LFLAGS_SONAME)$(DT_SONAME) -o lib/_$(BASELIBNAME).so
+lib/libhdbppinsert: lib obj obj/libhdbppinsert.o obj/libhdbppinsert_wrap.o
+	$(CXX) obj/libhdbppinsert.o obj/libhdbppinsert_wrap.o $(SHLDFLAGS) $(LFLAGS_SONAME)$(DT_SONAME) -o lib/_$(BASELIBNAME).so
 	
-obj/HdbppInsert_wrap.o: src/HdbppInsert_wrap.cxx src/HdbppInsert.h
-	$(CXX) $(CXXFLAGS) -fPIC -c src/HdbppInsert_wrap.cxx -o $@
+obj/libhdbppinsert_wrap.o: src/libhdbppinsert_wrap.cxx src/libhdbppinsert.h
+	$(CXX) $(CXXFLAGS) -fPIC -c src/libhdbppinsert_wrap.cxx -o $@
 	
-obj/HdbppInsert.o: src/HdbppInsert.cpp src/HdbppInsert.h
-	$(CXX) $(CXXFLAGS) -fPIC -c src/HdbppInsert.cpp -o $@
+obj/libhdbppinsert.o: src/libhdbppinsert.cpp src/libhdbppinsert.h
+	$(CXX) $(CXXFLAGS) -fPIC -c src/libhdbppinsert.cpp -o $@
 
-src/HdbppInsert_wrap.cxx: src/HdbppInsert.i
-	$(SWIG) src/HdbppInsert.i
+src/libhdbppinsert_wrap.cxx: src/libhdbppinsert.i
+	$(SWIG) src/libhdbppinsert.i
 
 .PHONY : install clean
 	
@@ -90,7 +90,7 @@ clean:
 install:	
 	install -d ${DESTDIR}/libhdbppinsert
 	touch ${DESTDIR}/libhdbppinsert/__init__.py
-	install -m 755 src/HdbppInsert.py ${DESTDIR}/libhdbppinsert/HdbppInsert.py
+	install -m 755 src/libhdbppinsert.py ${DESTDIR}/libhdbppinsert/libhdbppinsert.py
 	install -m 755 lib/_$(BASELIBNAME).so ${DESTDIR}/libhdbppinsert/_$(BASELIBNAME).so
 	
 all:
