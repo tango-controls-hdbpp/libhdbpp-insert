@@ -89,7 +89,7 @@ clean:
 	
 install:	
 	install -d ${DESTDIR}/libhdbppinsert
-	touch ${DESTDIR}/libhdbppinsert/__init__.py
+	echo "from ${BASELIBNAME} import *" > ${DESTDIR}/libhdbppinsert/__init__.py
 	install -m 755 src/libhdbppinsert.py ${DESTDIR}/libhdbppinsert/libhdbppinsert.py
 	install -m 755 lib/_$(BASELIBNAME).so ${DESTDIR}/libhdbppinsert/_$(BASELIBNAME).so
 	
