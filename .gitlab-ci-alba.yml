@@ -41,8 +41,8 @@ prepare_debrepo:
         fi
     - cd ${ARTIFACTS_DIR}/tmprepo
     - git checkout -b upstream
-    # tag upstream
-    - UPVERSION=`python setup.py --version`+git`date +%Y%m%d`.$CI_PIPELINE_ID.`git rev-parse --short=6 upstream`
+    # tag upstream #TODO it is hardcode
+    - UPVERSION=1.1.0+git`date +%Y%m%d`.$CI_PIPELINE_ID.`git rev-parse --short=6 upstream`
     - git tag upstream/$UPVERSION 
     # merge and update debian/stretch branch
     - git checkout debian/stretch
@@ -58,7 +58,7 @@ prepare_debrepo:
 
 
 build_package_stretch:
-  image: debian:stretch
+  image: dockerrg.cells.es/debpack-ci:latest #Use local image since deps. build pkgs are not officially available
   # If deps. build pkgs are not officially available use our alba image instead
   # image: dockerrg.cells.es/debpack-ci:latest 
   stage: pkg_build
