@@ -4,7 +4,7 @@ Library for inserting attributes in the HDB++ database
 
 ## Version
 
-The current release version is 1.0.0
+The current release version is 1.2.0
 
 ## Documentation
 

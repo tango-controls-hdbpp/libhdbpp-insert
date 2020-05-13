@@ -19,7 +19,10 @@
 
 #include <future>
 #include <thread> 
+#include <vector>
+#include <algorithm>
 #include <unistd.h>
+#include <ctime>
 
 #define _LIB_DEBUG
 
@@ -38,12 +41,12 @@
 HdbppInsert::HdbppInsert(const char *dbuser, const char *dbpass,
 								const char *dbhost, const char *dbnam,
 								const char *libname, const char *lightschema,
-								const char *port)
+								const char *port, int dbg_level = 50)
 {
 	vector< string > arg1 ;	
 	string tmp;
 	
-	debug_level = MSG_ERROR;
+	debug_level = dbg_level;
 	
 	string msg = "\033[0;37mtrying to connect to host: \\" + string (dbhost);
 	msg += " db name: \\" + string (dbnam);
@@ -129,14 +132,25 @@ int HdbppInsert::insert_Attr_Async(string attribute)
 			std::thread async_thread(&HdbppInsert::insert_Attr, this, attribute);
 			pending_ops[attribute] = true;
 
+			std::thread::id tid = async_thread.get_id();
+			std::stringstream ss;
+			ss << tid;
+			
+			att_tid[attribute] = tid;
+			if(std::find(tids_list.begin(), tids_list.end(), tid) == tids_list.end()) {
+				/* Thread not available yet */
+				tids_list.push_back(std::move(tid));
+			}
+			
+			print_Msg("\e[1;32m"+attribute+" Created Thread with Id: "+ss.str()+"\e[0m", MSG_DEBUG);
+			
 			/* join() waits until the thread finishes to continue.
 			* Better to use detach() to not wait for the thread to finish */
-			/* async_thread.join();*/
-			
+			/* async_thread.join();*/	
 			async_thread.detach();
 			
 			print_Msg(attribute+" insert_Attr_Async OK", MSG_DEBUG);  
-
+			
 			return RESULT_OK;
 		}
 		else
@@ -167,8 +181,8 @@ int HdbppInsert::insert_Attr(string attribute)
 	string event_name = "ARCHIVE_EVENT";
 	/*Tango::EventType event = Tango::ARCHIVE_EVENT;*/
 
-	print_Msg(attribute+" insert_Attr enter\n", MSG_DEBUG);
-	
+	print_Msg(attribute+" insert_Attr enter\n", MSG_DEBUG); 
+
 	/* Get DS Proxy or created if not created before */
 	map <string, Tango::DeviceProxy*> :: iterator it_dsproxy;
 	it_dsproxy = dsproxies.find(device_name);
@@ -228,7 +242,7 @@ int HdbppInsert::insert_Attr(string attribute)
 				res = RESULT_NOT_OK;
 				
 				delete info;
-				info = nullptr;				
+				info = nullptr;
 			}
 		}
 	}
@@ -289,7 +303,17 @@ int HdbppInsert::insert_Attr(string attribute)
 	}
 	
 	pending_ops[attribute] = false;
-	
+	std::thread::id tid = att_tid[attribute];
+	std::vector<std::thread::id>::iterator position = std::find(tids_list.begin(), tids_list.end(), tid);
+	if (position != tids_list.end()) {
+		tids_list.erase(position);
+		
+		std::stringstream ss;
+		ss << tid;
+		print_Msg("\e[1;32m"+attribute+" Removing Thread ID form list "+ss.str()+"\e[0m", MSG_DEBUG);
+	}
+			
+				
 	map <string, int> :: iterator it_attup;
 	it_attup = att_update.find(attribute);
 	if (it_attup != att_update.end())
@@ -300,7 +324,7 @@ int HdbppInsert::insert_Attr(string attribute)
 	{
 		att_update[attribute] = res;
 	}
-
+	
 	/* Release the function block */
 	mtx.unlock();
 
@@ -333,6 +357,24 @@ void HdbppInsert::reset_Attr_Pending_Ops(string attribute)
 		print_Msg("\e[1;31m"+attribute+" Force Reset Pending Operations!!\e[0m", MSG_ERROR);
 	}
 }
+
+int HdbppInsert::get_Pending_Threads()
+{
+	int tsize = tids_list.size();
+	std::stringstream ss;
+	ss << tsize;
+	
+	print_Msg("\e[1;32m Number of pending threads: "+ss.str()+"\e[0m", MSG_DEBUG);
+	
+	return tsize;
+}
+
+void HdbppInsert::set_Debug_Level(int level)
+{
+	debug_level = level;
+}
+
+
 
 //=============================================================================
 // Private Functions for the HdbppInsert Class
@@ -393,12 +435,13 @@ string HdbppInsert::remove_Tango(string str)
 void HdbppInsert::print_Msg(string msg, int level)
 {
 #ifdef _LIB_DEBUG
+	std::time_t result = std::time(NULL);
+	
 	if (level >= debug_level )
 	{
-		cout << msg << endl;
+		cout << result << " " << msg << endl;
 /*		printf(msg.c_str());*/
 	}
 #endif
 	return;
 }
-
