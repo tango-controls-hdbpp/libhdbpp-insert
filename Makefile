@@ -46,6 +46,7 @@ else
 endif
 
 CXXFLAGS += -std=gnu++0x -Wall -DRELEASE='"$HeadURL$ "' $(DBIMPL_INC) $(INC_DIR)
+CPPFLAGS = -I eigen
 LDFLAGS += $(LIB_DIR) -lhdb++ -ltango -llog4tango -lomniORB4 -lomniDynamic4 -lomnithread
 
 SWIG = swig3.0 -c++ -python
