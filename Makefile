@@ -45,8 +45,8 @@ else
 	INC_DIR += -I/usr/include/python2.7/
 endif
 
-CXXFLAGS += -std=gnu++0x -Wall -DRELEASE='"$HeadURL$ "' $(DBIMPL_INC) $(INC_DIR)
-CPPFLAGS = -I eigen
+CXXFLAGS += -std=gnu++0x -Wall -DRELEASE='"$HeadURL$ "' $(DBIMPL_INC) 
+CPPFLAGS += $(INC_DIR)
 LDFLAGS += $(LIB_DIR) -lhdb++ -ltango -llog4tango -lomniORB4 -lomniDynamic4 -lomnithread
 
 SWIG = swig3.0 -c++ -python
@@ -75,10 +75,10 @@ lib/libhdbppinsert: lib obj obj/libhdbppinsert.o obj/libhdbppinsert_wrap.o
 	$(CXX) obj/libhdbppinsert.o obj/libhdbppinsert_wrap.o $(SHLDFLAGS) $(LFLAGS_SONAME)$(DT_SONAME) -o lib/_$(BASELIBNAME).so
 	
 obj/libhdbppinsert_wrap.o: src/libhdbppinsert_wrap.cxx src/libhdbppinsert.h
-	$(CXX) $(CXXFLAGS) -fPIC -c src/libhdbppinsert_wrap.cxx -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -fPIC -c src/libhdbppinsert_wrap.cxx -o $@
 	
 obj/libhdbppinsert.o: src/libhdbppinsert.cpp src/libhdbppinsert.h
-	$(CXX) $(CXXFLAGS) -fPIC -c src/libhdbppinsert.cpp -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -fPIC -c src/libhdbppinsert.cpp -o $@
 
 src/libhdbppinsert_wrap.cxx: src/libhdbppinsert.i
 	$(SWIG) src/libhdbppinsert.i
